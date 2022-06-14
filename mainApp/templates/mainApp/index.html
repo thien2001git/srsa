@@ -1,0 +1,117 @@
+{% extends "layout.html" %}
+{% block tit %}
+<title>Tạo chữ ký</title>
+{% endblock%}
+
+{% block content %}
+<div class="container-md">
+    <form action="#" method="post">
+        {% csrf_token %}
+        <label for="snt">Chọn số nguyên tố p: </label>
+        <input type="number" name="sntp" id="sntp" title="Chọn số nguyên tố p" value="15507007" min="2">
+        Xem số nguyên tố <a target="_blank" href="/media/primes1.txt">tại đây</a> hoặc <a target="_blank"
+            href="/media/primes2.txt">tại đây</a>
+        <p id="pm"></p>
+        <label for="snt">Chọn số nguyên tố q: </label>
+        <input type="number" name="sntq" id="sntq" title="Chọn số nguyên tố q" value="15487861" min="2">
+        <p id="qm"></p>
+        <label for="n">Số n: <span id="nn"></span></label>
+        <input type="number" name="n" id="n" title="n" hidden>
+        <label for="phi">&#x0278;(n): <span id="phph"></span></label>
+        <input type="number" name="phi" id="phi" hidden>
+        <label for="sntb">Chọn số nguyên tố b: </label>
+        <input type="number" name="sntb" id="sntb" title="Chọn số nguyên tố q" min="2">
+        <p id="am"></p>
+        <button id="sub" type="submit" disabled>Lưu</button>
+    </form>
+</div>
+
+<script>
+
+    const p = $('#sntp')[0];
+    const q = $('#sntq')[0];
+    const a = $('#sntb')[0];
+    p.addEventListener('change', (event) => {
+        let kq = is_prime(parseInt($('#sntp').val()))
+        $('#pm').empty()
+        if (kq) {
+            $('#pm').append("Chấp nhận")
+            setn()
+        } else {
+            $('#pm').append("Không được")
+        }
+
+    });
+    q.addEventListener('change', (event) => {
+        let kq = is_prime(parseInt($('#sntq').val()))
+        $('#qm').empty()
+        if (kq) {
+            $('#qm').append("Chấp nhận")
+            setn()
+        } else {
+            $('#qm').append("Không được")
+        }
+
+    });
+    a.addEventListener('change', (event) => {
+        let sa = parseInt($('#sntb').val())
+        
+        let phi = parseInt($('#phi').val())
+        // console.log(sa)
+        // console.log(phi)
+        if (sa > phi) {
+            $('#am').append("Không được")
+        } else {
+            let g = gcd(phi, sa)
+            let kq = is_prime(sa)
+
+            $('#am').empty()
+            if (kq && g == 1) {
+                $('#am').append("Chấp nhận")
+                $('#sub').removeAttr("disabled")
+            } else {
+                $('#am').append("Không được")
+            }
+        }
+    });
+    function setn() {
+
+        let p = parseInt($('#sntp').val())
+        let q = parseInt($('#sntq').val())
+        $('#nn').append(p * q)
+        $('#n').val(p * q)
+        $('#phph').append((p - 1) * (q - 1))
+        $('#phi').val((p - 1) * (q - 1))
+
+    }
+
+    function gcd(a, b) {
+        if (a == b) return a
+        if (a == 0) return b
+        if (b == 0) return a
+        
+        while (b != 0) {
+            r = a % b
+            a = b
+            b = r
+        }
+        return a
+    }
+
+    function is_prime(n) {
+        // """Primality test using 6k+-1 optimization."""
+        if (n <= 3)
+            return n > 1
+        if (n % 2 == 0 || n % 3 == 0) {
+            return false
+        }
+        i = 5
+
+        for (i = 5; i * i <= n; i += 6) {
+            if (n % i == 0 || n % (i + 2) == 0)
+                return false;
+        }
+        return true
+    }
+</script>
+{% endblock%}
